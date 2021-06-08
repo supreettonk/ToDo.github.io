@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@500&family=Ubuntu&display=swap" rel="stylesheet">
+    <title>ToDo List</title>
+    <style>
+        *{
+            margin: 0%;
+            padding: 0%;
+            font-family: 'Ubuntu', sans-serif;
+            
+        }
+        #navigation{
+            background-color: black;
+            opacity: 0.4;
+            color:white;
+            padding-top: 10px;
+            height: 40px;
+            text-align: center;
+
+        }
+     #home{
+
+    height: 200px;
+    width: 100%;
+}
+
+#home::before{ 
+    content: "";
+    position: absolute;
+    background: url('bk1.jpeg');
+    background-size: cover;
+    height: 100vh;
+    top:0px;
+    left:0px;
+    width: 100%;
+    z-index: -1;
+    opacity:0.7;
+}
+.container{
+    margin-left: 23%;
+  
+}
+.btn{
+
+    padding: 4px 5px;
+    margin: 4px 2px;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.c2{
+    margin-top: 40px;
+    margin-left: 23%;
+}
+table {
+  border-collapse: collapse;
+  width: 71%;
+}
+
+td, th {
+  border: 1px solid #333232;
+  text-align: left;
+  padding: 0.5%;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd /* even one are dark in table*/
+}
+@media screen and (max-width:500px){ 
+   #home .btn{
+width: 20%;
+height: 20%;
+background-color: black;
+color: white;
+}
+#del{
+    padding: 4px 5px;
+    margin: 4px 2px;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+}
+
+    </style>
+</head>
+<body>
+    <nav id="navigation">
+     <h3>Stay Focused.. Stay Tuned!!</h3>
+    </nav>
+    <br>
+    <section id="home" class="main">
+        <h1 style="text-align: center;">ToDo List</h1>
+        <br>
+        <div class="container">
+            <div><label for="">Title</label></div>
+            <div><input type="text" style="width: 71%; height: 25px;" id="title"></div>
+            <div><small>Add an item to the list</small></div>
+        <br>
+            <div><label for="">Description</label></div>
+            <div><textarea name="" style="width: 72%; height: 50px;" id="description"></textarea></div>
+            <button class="btn" id="add">Add item</button>
+            <button class="btn" id="add" onclick="clearfeilds()">Clear Fields</button>
+            <button class="btn" id="clear" onclick="clearStorage()">Clear Items</button>
+            
+        </div>
+    </section>
+    <br>
+
+    <div id="items" class="c2">
+        <h3>Your Items</h3>
+        <br>
+        <table class="table">
+            <thead>
+              <tr>
+                <th >SNo</th>
+                <th >Item Title</th>
+                <th >Item Description</th> 
+                <th >Actions</th> 
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr>
+                <td>1</td>
+                <td>Get some Coffee</td>
+                <td>You need coffee </td> 
+                <td><button class="btn" id="del">Delete</button></td> 
+              </tr>
+              
+            </tbody>
+          </table>
+    </div>
+    <script>
+        function getAndUpdate(){
+            console.log("Updating List...");
+            tit = document.getElementById('title').value;
+            desc = document.getElementById('description').value;
+            if (localStorage.getItem('itemsJson')==null){
+                itemJsonArray = [];
+                itemJsonArray.push([tit, desc]);
+                localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+            }
+            else{
+                itemJsonArrayStr = localStorage.getItem('itemsJson')
+                itemJsonArray = JSON.parse(itemJsonArrayStr);
+                itemJsonArray.push([tit, desc]);
+                localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+            }
+            update();
+        }
+
+        function update(){
+            if (localStorage.getItem('itemsJson')==null){
+                itemJsonArray = []; 
+                localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+            } 
+            else{
+                itemJsonArrayStr = localStorage.getItem('itemsJson')
+                itemJsonArray = JSON.parse(itemJsonArrayStr); 
+            }
+            // Populate the table
+            let tableBody = document.getElementById("tableBody");
+            let str = "";
+            itemJsonArray.forEach((element, index) => {
+                str += `
+                <tr>
+                <th scope="row">${index + 1}</th>
+                <td>${element[0]}</td>
+                <td>${element[1]}</td> 
+                <td><button class="btn" onclick="deleted(${index})">Delete</button></td> 
+                </tr>`; 
+            });
+            tableBody.innerHTML = str;
+        }
+        add = document.getElementById("add");
+        add.addEventListener("click", getAndUpdate);
+        update();
+        function deleted(itemIndex){
+            console.log("Delete", itemIndex);
+            itemJsonArrayStr = localStorage.getItem('itemsJson')
+            itemJsonArray = JSON.parse(itemJsonArrayStr);
+            // Delete itemIndex element from the array using splice
+            itemJsonArray.splice(itemIndex, 1);
+            localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray));
+            update();
+
+        }
+        function clearStorage(){
+            if (confirm("Do you areally want to clear?")){
+            console.log('Clearing the storage')
+            localStorage.clear();
+            update();
+            }
+        }
+       
+
+            //clear the data in inputs when u click add item
+            function clearfeilds(){
+            document.getElementById('title').value='';
+            document.getElementById('description').value='';
+        }
+
+
+
+    </script>
+</body>
+</html>
